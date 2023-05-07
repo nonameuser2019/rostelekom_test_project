@@ -1,3 +1,5 @@
+from selenium.common import NoSuchElementException
+
 from pages.base_page import BasePage
 from selenium.webdriver.common.by import By
 
@@ -39,8 +41,8 @@ class RegisterPage(BasePage):
     def error_message_text_list(self):
         return self.browser.find_elements(By.CSS_SELECTOR, "span.rt-input-container__meta--error")
 
-    def check_confirm_email_title(self):
-        assert self.confirm_email_title().text == 'Подтверждение email', f'Некорректный текст в заголовке'
+    def check_confirm_email_page_title(self):
+        assert self.confirm_email_title().text == 'Подтверждение email', f'Некорректный текст в тайтле'
 
     def check_error_message(self, message_text: str):
         assert message_text == self.error_message_text().text, f'Некорректный текст ошибки'
@@ -59,7 +61,7 @@ class RegisterPage(BasePage):
     def check_default_region(self):
         assert self.region_input().get_property('value') == 'Москва г'
 
-    def check_register_form_field(self):
+    def check_all_form_fields(self):
         self.name_input().is_displayed()
         self.last_name_input().is_displayed()
         self.region_input().is_displayed()
@@ -67,5 +69,11 @@ class RegisterPage(BasePage):
         self.password_input().is_displayed()
         self.password_confirm_input().is_displayed()
         self.register_button()  .is_displayed()
-        assert self.register_button().text == 'Продолжить', f'Некорректный текст на кнопке'
         self.policy_link().is_displayed()
+        assert self.register_button().text == 'Продолжить', f'Некорректный текст на кнопке'
+
+    def error_message_is_hidden(self):
+        try:
+            self.error_message_text().is_displayed()
+        except NoSuchElementException:
+            assert True, f'Элемент не скрыт'
